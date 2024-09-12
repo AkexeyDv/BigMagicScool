@@ -32,10 +32,16 @@ public class FacultyServiceImpl {
     public Faculty editFaculty(Faculty faculty) {
         Faculty editingFaculty = facultyRepository.findById(faculty.getId())
                 .orElseThrow(() -> new ExceptionApp("Указанный id факультета " + faculty.getId() +
-                        "отсутствует"));
+                        " отсутствует"));
         editingFaculty.setName(faculty.getName());
         editingFaculty.setColor(faculty.getColor());
         return facultyRepository.save(editingFaculty);
+    }
+
+    public Faculty getFaculty(Long idFaculty){
+        return facultyRepository.findById(idFaculty)
+                .orElseThrow(() -> new ExceptionApp("Указанный id факультета " +
+                        idFaculty +" отсутствует"));
     }
 
     public List<Faculty> getAllFaculty(){
