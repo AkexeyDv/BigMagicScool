@@ -59,6 +59,10 @@ public class StudentServiceImpl {
         return studentRepository.findById(student.getId()).orElseThrow(()->new ExceptionApp("Не найти студента с таким id"));
     }
 
+    public Student findStudentById(Long idStudent){
+        return studentRepository.findById(idStudent).orElseThrow(null);
+    }
+
     public List<Student> getAllStudent() {
         return studentRepository.findAll();
     }
