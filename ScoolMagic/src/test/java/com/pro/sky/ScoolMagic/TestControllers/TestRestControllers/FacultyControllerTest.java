@@ -51,7 +51,7 @@ class FacultyControllerTest {
     }
 
     @Test
-    void editFaculty() {
+    void editFaculty() throws Exception{
         Faculty testFaculty = new Faculty();
         testFaculty.setName("TestFromCreateFaculty");
         testFaculty.setColor("TestColorFromCreateFaculty");
@@ -65,7 +65,7 @@ class FacultyControllerTest {
     }
 
     @Test
-    void getAllFaculty() {
+    void getAllFaculty() throws Exception{
         Assertions.assertNotEquals(0,
                 testRestTemplate.getForObject("http://localhost:" + port + "/faculty", List.class).size());
     }
@@ -89,7 +89,7 @@ class FacultyControllerTest {
     }
 
     @Test
-    void deleteFaculty() {
+    void deleteFaculty() throws Exception{
         Map<String, String> param = new HashMap<>();
         Faculty testFaculty = new Faculty();
         testFaculty.setName("TestFromDeleteFaculty");
