@@ -3,6 +3,7 @@ package com.pro.sky.ScoolMagic.Services;
 import com.pro.sky.ScoolMagic.Exception.ExceptionApp;
 import com.pro.sky.ScoolMagic.Models.Faculty;
 import com.pro.sky.ScoolMagic.Models.Student;
+import com.pro.sky.ScoolMagic.Models.StydentByScool;
 import com.pro.sky.ScoolMagic.Repository.FacultyRepository;
 import com.pro.sky.ScoolMagic.Repository.StudentRepository;
 import org.slf4j.Logger;
@@ -92,4 +93,16 @@ public class StudentServiceImpl {
 
         return delStudent;
     }
+
+    public Integer countStudent(){
+        return studentRepository.countStudent();
+    }
+    public Integer avgAgeStudent(){
+        return studentRepository.avgAgeStudent();
+    }
+
+    public List<StydentByScool> getStudentBottom(){
+        return studentRepository.getStudentBottom5();
+    }
+
 }

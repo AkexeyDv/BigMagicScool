@@ -2,6 +2,7 @@ package com.pro.sky.ScoolMagic.Controllers;
 
 import com.pro.sky.ScoolMagic.Models.Avatar;
 import com.pro.sky.ScoolMagic.Models.Student;
+import com.pro.sky.ScoolMagic.Models.StydentByScool;
 import com.pro.sky.ScoolMagic.Services.AvatarServiceImpl;
 import com.pro.sky.ScoolMagic.Services.StudentServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 
 @RequestMapping("/student")
 @RestController
@@ -100,5 +102,19 @@ public class StudentController {
         }
 
     }
+    @GetMapping("/count")
+    public Integer countStudent(){
+        return studentService.countStudent();
+    }
+    @GetMapping("/midi-age")
+    public Integer avgAgeStudent(){
+        return studentService.avgAgeStudent();
+    }
+
+    @GetMapping("/Bottom5")
+    public List<StydentByScool> getStudentBottom(){
+        return  studentService.getStudentBottom();
+    }
+
 
 }

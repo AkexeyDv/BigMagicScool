@@ -1,10 +1,12 @@
 package com.pro.sky.ScoolMagic.Models;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
+@NoArgsConstructor
 public class Avatar {
     @Id
     @GeneratedValue(strategy = IDENTITY)

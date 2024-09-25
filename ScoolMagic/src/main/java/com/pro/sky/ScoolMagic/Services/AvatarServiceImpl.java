@@ -1,9 +1,13 @@
 package com.pro.sky.ScoolMagic.Services;
 
+import com.pro.sky.ScoolMagic.Exception.ExceptionApp;
 import com.pro.sky.ScoolMagic.Models.Avatar;
 import com.pro.sky.ScoolMagic.Models.Student;
 import com.pro.sky.ScoolMagic.Repository.AvatarRepository;
+import com.pro.sky.ScoolMagic.Repository.StudentRepository;
+import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,25 +18,26 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 @Service
 @Transactional
-
 public class AvatarServiceImpl {
-    @Value("avatars")
+    @Value(value = "${avatars.dir.path}")
     private String avatarsDir;
-    private final StudentServiceImpl studentService;
+    private final StudentRepository studentRepository;
     private final AvatarRepository avatarRepository;
 
-    public AvatarServiceImpl(StudentServiceImpl studentService, AvatarRepository avatarRepository) {
-        this.studentService = studentService;
+    public AvatarServiceImpl(StudentRepository studentRepository, AvatarRepository avatarRepository) {
+        this.studentRepository = studentRepository;
         this.avatarRepository = avatarRepository;
     }
 
     public void uploadAvatar(Long idStudent, MultipartFile file) throws IOException {
-        Student student = studentService.findStudentById(idStudent);
+        Student student = studentRepository.findById(idStudent).orElseThrow(()->new ExceptionApp("Студент не найден"));
         Path pathFile = Path.of(avatarsDir, idStudent + "." + getExe(file.getOriginalFilename()));
         Files.createDirectories(pathFile.getParent());
         Files.deleteIfExists(pathFile);
@@ -45,8 +50,9 @@ public class AvatarServiceImpl {
             bis.transferTo(bos);
 
         }
+        System.out.println(student);
 
-        Avatar avatar = findAvatar(idStudent);
+        Avatar avatar = new Avatar();
         avatar.setStudent(student);
         avatar.setFilePath(pathFile.toString());
         avatar.setFileSize(file.getSize());
@@ -56,6 +62,8 @@ public class AvatarServiceImpl {
 
 
     }
+
+
 
     private byte[] smallImg(Path filePath) throws IOException {
         try (InputStream is = Files.newInputStream(filePath);
@@ -73,6 +81,11 @@ public class AvatarServiceImpl {
 
 
         }
+    }
+
+    public List<Avatar> getAllAvatar(Integer pageNumber, Integer pageSize){
+        PageRequest pageRequest=PageRequest.of(pageNumber-1,pageSize);
+        return avatarRepository.findAll(pageRequest).getContent();
     }
 
     private String getExe(String nameFile){
