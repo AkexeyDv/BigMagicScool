@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 public class FacultyServiceImpl {
-    private static final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(FacultyServiceImpl.class);
     private final StudentRepository studentRepository;
     private final FacultyRepository facultyRepository;
 
@@ -23,42 +23,71 @@ public class FacultyServiceImpl {
     }
 
     public Faculty createFaculty(Faculty faculty) {
+        logger.info("Вызван метод createFaculty");
         Faculty saveFaculty = new Faculty();
         saveFaculty.setName(faculty.getName());
         saveFaculty.setColor(faculty.getColor());
+
         return facultyRepository.save(saveFaculty);
     }
 
     public Faculty editFaculty(Faculty faculty) {
+        logger.info("Вызван метод editFaculty");
+
         Faculty editingFaculty = facultyRepository.findById(faculty.getId())
-                .orElseThrow(() -> new ExceptionApp("Указанный id факультета " + faculty.getId() +
-                        " отсутствует"));
+                .orElseThrow(
+                        () -> {
+                            logger.error("Факультет с id " + faculty.getId() + " отсутствует");
+                            new ExceptionApp("Указанный факультет "
+                                    + faculty.getId() + " отсутствует");
+                            return null;
+                        });
+
         editingFaculty.setName(faculty.getName());
         editingFaculty.setColor(faculty.getColor());
         return facultyRepository.save(editingFaculty);
     }
 
-    public Faculty getFaculty(Long idFaculty){
+    public Faculty getFaculty(Long idFaculty) {
+        logger.info("Вызван метод getFaculty");
         return facultyRepository.findById(idFaculty)
-                .orElseThrow(() -> new ExceptionApp("Указанный id факультета " +
-                        idFaculty +" отсутствует"));
+                .orElseThrow(() -> {
+                    logger.error("Факультет с id " + idFaculty + " отсутствует");
+                    new ExceptionApp("Указанный факультет с id " + idFaculty + " отсутствует");
+                    return null;
+                });
     }
 
-    public List<Faculty> getAllFaculty(){
+    public List<Faculty> getAllFaculty() {
+        logger.info("Вызван метод getAllFaculty");
         return facultyRepository.findAll();
     }
 
-    public Faculty getFacultetByStudent(Long idStudent){
-        Student findStudent=studentRepository.findById(idStudent)
-                .orElseThrow(()->new ExceptionApp("Студента с id "+idStudent+" нет"));
+    public Faculty getFacultetByStudent(Long idStudent) {
+        logger.info("Вызван метод getFacultetByStudent");
+        Student findStudent = studentRepository.findById(idStudent)
+                .orElseThrow(() -> {
+                    logger.error("Студент с id " + idStudent + " отсутствует");
+                    new ExceptionApp("Студента с id " + idStudent + " нет");
+                    return null;
+                });
         return findStudent.getFaculty();
     }
 
-    public Faculty deleteFaculty(Long idFaculty){
-        Faculty delFaculty=facultyRepository.findById(idFaculty)
-                .orElseThrow(()->new ExceptionApp("Факультета с id "+idFaculty+" нет"));
-        if(!delFaculty.getStudents().isEmpty()){
-            throw new ExceptionApp("В факультете с id " + idFaculty+" есть студенты. Удаление невозможно");
+    public Faculty deleteFaculty(Long idFaculty) {
+        logger.info("Вызван метод deleteFaculty ");
+        Faculty delFaculty = facultyRepository.findById(idFaculty)
+                .orElseThrow(() -> {
+                    logger.error("Факультет с id " + idFaculty + " отсутствует");
+                    new ExceptionApp("Указанный факультет "
+                            + idFaculty + " отсутствует");
+                    return null;
+                });
+
+        if (!delFaculty.getStudents().isEmpty()) {
+            logger.error("Нарушение ссылочной целостности - в факультете с id" + idFaculty
+                    + "есть студенты");
+            throw new ExceptionApp("В факультете с id " + idFaculty + " есть студенты. Удаление невозможно");
         }
         facultyRepository.deleteById(idFaculty);
         return delFaculty;

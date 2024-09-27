@@ -6,6 +6,8 @@ import com.pro.sky.ScoolMagic.Models.Student;
 import com.pro.sky.ScoolMagic.Repository.AvatarRepository;
 import com.pro.sky.ScoolMagic.Repository.StudentRepository;
 import org.hibernate.query.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -22,14 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
+import org.slf4j.LoggerFactory;
 
 @Service
 @Transactional
 public class AvatarServiceImpl {
     @Value(value = "${avatars.dir.path}")
     private String avatarsDir;
+    private static final Logger logger= LoggerFactory.getLogger(AvatarServiceImpl.class);
     private final StudentRepository studentRepository;
     private final AvatarRepository avatarRepository;
+
 
     public AvatarServiceImpl(StudentRepository studentRepository, AvatarRepository avatarRepository) {
         this.studentRepository = studentRepository;
@@ -37,7 +42,12 @@ public class AvatarServiceImpl {
     }
 
     public void uploadAvatar(Long idStudent, MultipartFile file) throws IOException {
-        Student student = studentRepository.findById(idStudent).orElseThrow(()->new ExceptionApp("Студент не найден"));
+        logger.info("Вызван метод uploadAvatar");
+        Student student = studentRepository.findById(idStudent).orElseThrow(()->{
+            logger.warn("Нет студента с id "+idStudent);
+            new ExceptionApp("Студент не найден");
+            return null;
+        });
         Path pathFile = Path.of(avatarsDir, idStudent + "." + getExe(file.getOriginalFilename()));
         Files.createDirectories(pathFile.getParent());
         Files.deleteIfExists(pathFile);
@@ -66,6 +76,7 @@ public class AvatarServiceImpl {
 
 
     private byte[] smallImg(Path filePath) throws IOException {
+        logger.info("Вызван метод smallImg");
         try (InputStream is = Files.newInputStream(filePath);
              BufferedInputStream bis = new BufferedInputStream(is, 1024);
              ByteArrayOutputStream baos = new ByteArrayOutputStream()
@@ -84,15 +95,18 @@ public class AvatarServiceImpl {
     }
 
     public List<Avatar> getAllAvatar(Integer pageNumber, Integer pageSize){
+        logger.info("Вызван метод getAllAvatar");
         PageRequest pageRequest=PageRequest.of(pageNumber-1,pageSize);
         return avatarRepository.findAll(pageRequest).getContent();
     }
 
     private String getExe(String nameFile){
+        logger.info("Вызван метод nameFile");
         return nameFile.substring(nameFile.lastIndexOf(".") + 1);
     }
 
     public Avatar findAvatar(Long id) {
+        logger.info("Вызван метод findAvatar");
         return avatarRepository.findByStudentId(id).orElse(null);
     }
 }

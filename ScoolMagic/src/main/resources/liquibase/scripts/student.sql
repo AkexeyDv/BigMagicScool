@@ -1,3 +1,4 @@
 -- liquibase formatted sql
--- changeset sconnor:1
-CREATE INDEX sdudent_name_idx ON USING GIST student(name);
+-- changeset student1:1
+--DROP INDEX student_name_idx;
+--CREATE INDEX student_name_idx ON student(name);
